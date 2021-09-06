@@ -60,4 +60,39 @@ function SignOut() {
   );
 }
 
+function ChatRoom() {
+  // reference a firestore collection
+  const messagesRef = firestore.collection("messages");
+  // query documents in a collection and limit to a max of 25
+  const query = messagesRef.orderBy("createdAt").limit(25);
+  // listen to data with a hook
+  const [messages] = useCollectionData(query, { idField: "id" });
+  // reacts to changes in realtime
+  return (
+    <>
+      <div>
+        {messages &&
+          messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)}
+      </div>
+    </>
+  );
+}
+function ChatMessage(props) {
+  const { text, uid } = props.message;
+  const messageClass = uid === auth.currentUser.uid ? "sent" : "received";
+  return (
+    <>
+      <div className={`message ${messageClass}`}>
+        <img
+          src={
+            photoURL || "https://api.adorable.io/avatars/23/abott@adorable.png"
+          }
+          alt="avatar"
+        />
+        <p>{text}</p>
+      </div>
+    </>
+  );
+}
+
 export default App;
