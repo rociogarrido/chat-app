@@ -1,8 +1,9 @@
+import React, { useState } from "react";
 import "./App.css";
 
-import firebase from "firebase/app";
-import "firebase/auth";
-import "firebase/firestore";
+import firebase from "firebase/compat/app";
+import "firebase/compat/firestore";
+import "firebase/compat/auth";
 
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollectionData } from "react-firebase-hooks/firestore";
@@ -25,7 +26,10 @@ function App() {
 
   return (
     <div className="App">
-      <header></header>
+      <header>
+        <h1>⚛️🔥💬</h1>
+        <SignOut />
+      </header>
 
       <section>{user ? <ChatRoom /> : <SignIn />}</section>
     </div>
@@ -65,20 +69,30 @@ function ChatRoom() {
   const messagesRef = firestore.collection("messages");
   // query documents in a collection and limit to a max of 25
   const query = messagesRef.orderBy("createdAt").limit(25);
-  // listen to data with a hook
+  // listen to data with a hook and reacts to changes in realtime
   const [messages] = useCollectionData(query, { idField: "id" });
-  // reacts to changes in realtime
+  //
+  const [formValue, setFormValue] = useState("");
   return (
     <>
       <div>
         {messages &&
           messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)}
       </div>
+
+      <form>
+        <input
+          value={formValue}
+          onChange={(e) => setFormValue(e.target.value)}
+          placeholder="say something nice"
+        />
+        <button type="submit">🕊️</button>
+      </form>
     </>
   );
 }
 function ChatMessage(props) {
-  const { text, uid } = props.message;
+  const { text, uid, photoURL } = props.message;
   const messageClass = uid === auth.currentUser.uid ? "sent" : "received";
   return (
     <>
