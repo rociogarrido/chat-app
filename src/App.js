@@ -73,6 +73,23 @@ function ChatRoom() {
   const [messages] = useCollectionData(query, { idField: "id" });
   //
   const [formValue, setFormValue] = useState("");
+
+  // create a new document in firestore
+  const sendMessage = async (e) => {
+    e.preventDefault();
+
+    const { uid, photoURL } = auth.currentUser;
+
+    await messagesRef.add({
+      text: formValue,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      uid,
+      photoURL,
+    });
+
+    setFormValue("");
+  };
+
   return (
     <>
       <div>
@@ -80,7 +97,7 @@ function ChatRoom() {
           messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)}
       </div>
 
-      <form>
+      <form onSubmit={sendMessage}>
         <input
           value={formValue}
           onChange={(e) => setFormValue(e.target.value)}
