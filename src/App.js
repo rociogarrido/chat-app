@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import "./App.css";
 
 import firebase from "firebase/compat/app";
@@ -27,7 +27,7 @@ function App() {
   return (
     <div className="App">
       <header>
-        <h1>⚛️🔥💬</h1>
+        <h1>⚛️🔥 💬 </h1>
         <SignOut />
       </header>
 
@@ -65,6 +65,7 @@ function SignOut() {
 }
 
 function ChatRoom() {
+  const dummy = useRef();
   // reference a firestore collection
   const messagesRef = firestore.collection("messages");
   // query documents in a collection and limit to a max of 25
@@ -88,14 +89,16 @@ function ChatRoom() {
     });
 
     setFormValue("");
+    dummy.current.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
     <>
-      <div>
+      <main>
         {messages &&
           messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)}
-      </div>
+        <span ref={dummy}></span>
+      </main>
 
       <form onSubmit={sendMessage}>
         <input
